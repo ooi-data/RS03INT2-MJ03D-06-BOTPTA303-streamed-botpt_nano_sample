@@ -16,6 +16,7 @@ RUN_OPTIONS = {
     'env': {
         'PREFECT__CLOUD__HEARTBEAT_MODE': 'thread',
     },
+    'task_role_arn': os.environ.get('TASK_ROLE_ARN', None),
     'cpu': '2 vcpu',
     'memory': '16 GB',
     'labels': ['ecs-agent', 'ooi', 'prod'],
@@ -74,5 +75,10 @@ parent_flow.storage = Docker(
         'git+https://github.com/ooi-data/ooi-harvester.git@main'
     ],
     image_tag=image_tag,
-    build_kwargs={'nocache': True}
+    build_kwargs={
+        'nocache': True,
+        'buildargs': {
+            'PYTHON_VERSION': os.environ.get('PYTHON_VERSION', '3.8')
+        },
+    },
 )
